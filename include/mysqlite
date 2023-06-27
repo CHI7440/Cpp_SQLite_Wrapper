@@ -1,0 +1,58 @@
+#ifndef __$__mysqlite__
+#define __$__mysqlite__1234
+#include<iostream>
+#include<SQLiteException>
+#include<sqlite3.h>
+#include<forward_list>
+#include<map>
+using namespace std;
+
+namespace sqlite
+{
+class Row
+{
+private :
+map<string,string> row;
+public:
+Row();
+Row(string columnName, string data);
+void setElement(string columnName, string data);
+int getInt(string columnName);
+string getString(string columnName);
+};
+
+class Rows
+{
+private :
+forward_list<Row *> *rows;
+forward_list<Row *>::iterator insertIterator;
+forward_list<Row *>::iterator traverseIterator;
+int allocationFlag;
+public:
+Rows();
+Rows(Row *row);
+~Rows();
+void addRow(Row *row);
+Row getRow();
+int hasMoreRows();
+friend class SQLiteDB;
+};
+
+class SQLiteDB 
+{
+private:
+sqlite3 *db;
+public :
+static int rowHandler(void *ptr, int columnCount, char **columnName, char **dataPtr);
+SQLiteDB();
+SQLiteDB(string file);
+void open(string file);
+void createTable(string sql);
+void executeInsert(string sql);
+void executeUpdate(string sql);
+void executeDelete(string sql);
+Rows selectRows(string sql);
+void close();
+};
+}
+#endif
